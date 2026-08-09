@@ -19,7 +19,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public AuthResponse login(@Valid @RequestBody AuthRequest request){
-
+        AuthResponse response = authService.authenticate(request);
     }
 
 

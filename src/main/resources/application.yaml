@@ -1,3 +1,6 @@
 spring:
   application:
     name: ciube
+jwt:
+  signer-key: ${SECRET_KEY}
+  valid-duration: 36000

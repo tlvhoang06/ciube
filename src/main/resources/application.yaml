@@ -3,4 +3,6 @@ spring:
     name: ciube
 jwt:
   signer-key: ${SECRET_KEY}
-  valid-duration: 36000
+  access-token-duration: 3600
+  refresh-token-duration: 604800
+  issuer: ciube.com

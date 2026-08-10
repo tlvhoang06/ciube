@@ -1,5 +1,7 @@
 package com.hoang.ciube.modules.auth.service;
 
+import com.hoang.ciube.common.exception.AppException;
+import com.hoang.ciube.common.exception.ErrorCode;
 import com.hoang.ciube.modules.auth.entity.User;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
@@ -8,21 +10,39 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.time.Instant;
 import java.util.Date;
+import java.util.UUID;
 
 @Service
 public class JwtService {
-    @Value("${jwt.valid-duration}")
-    private long validDuration;
+    public static final String ACCESS_TYPE = "ACCESS";
+    public static final String REFRESH_TYPE = "REFRESH";
 
+    @Value("${jwt.access-token-duration}")
+    private long accessTokenDuration;
+
+    @Value("${jwt.refresh-token-duration}")
+    private long refreshTokenDuration;
 
     @Value("${jwt.signer-key}")
     private String secretKey;
 
-    public String generateToken(User user) {
+    @Value("${jwt.issuer}")
+    private String issuer;
+
+
+    public String generateAccessToken(User user) {
+        return buildToken(user, accessTokenDuration, ACCESS_TYPE);
+    }
+
+    public String generateRefreshToken(User user) {
+        return buildToken(user, refreshTokenDuration, REFRESH_TYPE);
+    }
+
+    private String buildToken(User user, long validDuration, String tokenType) {
         Instant now = Instant.now();
 
         // create header
@@ -34,38 +54,63 @@ public class JwtService {
         // create claim
         Date issueAt = Date.from(now);
         Date expiryTime = Date.from(now.plusSeconds(validDuration));
-        JWTClaimsSet claims = new JWTClaimsSet.Builder()
+        JWTClaimsSet.Builder claims = new JWTClaimsSet.Builder()
                 .subject(user.getUsername())
-                .claim("role", "USER")
+                .issuer(issuer)
                 .issueTime(issueAt)
                 .expirationTime(expiryTime)
-                .build();
+                .jwtID(UUID.randomUUID().toString())
+                .claim("token_type", tokenType);
+
+        // add roles / authority to access token
+        if (ACCESS_TYPE.equals(tokenType)) {
+            claims.claim("roles", "user.getroles");
+        }
 
         // sign jwt
-        SignedJWT signedJWT = new SignedJWT(header, claims);
+        SignedJWT signedJWT = new SignedJWT(header, claims.build());
         try {
-            JWSSigner signer = new MACSigner(secretKey);
+            JWSSigner signer = new MACSigner(secretKey.getBytes(StandardCharsets.UTF_8));
             signedJWT.sign(signer);
+            return signedJWT.serialize();
         } catch (JOSEException e) {
             throw new IllegalStateException("Fail to generate JWT", e);
         }
-
-        return signedJWT.serialize();
     }
 
-    public boolean validateToken(String token) throws JOSEException, ParseException {
+    public JWTClaimsSet validateToken(String token, String expectedType) {
         // parse token
-        SignedJWT signedJWT = SignedJWT.parse(token);
-        JWSVerifier verifier = new MACVerifier(secretKey);
+        try {
+            SignedJWT signedJWT = SignedJWT.parse(token);
+            JWTClaimsSet claimsSet = signedJWT.getJWTClaimsSet();
+            // verify algorithm
+            if (!JWSAlgorithm.HS256.equals(signedJWT.getHeader().getAlgorithm())) {
+                throw new AppException(ErrorCode.INVALID_TOKEN);
+            }
 
-        if(signedJWT.verify(verifier)){
-            long expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime().getTime();
-            long now = System.currentTimeMillis();
-            return (expiryTime > now);
+            // verify signature
+            JWSVerifier verifier = new MACVerifier(secretKey.getBytes(StandardCharsets.UTF_8));
+            if (!signedJWT.verify(verifier))
+                throw new AppException(ErrorCode.INVALID_TOKEN);
+
+            // verify expiration time
+            Date expiration = claimsSet.getExpirationTime();
+            if (expiration == null || expiration.before(new Date()))
+                throw new AppException(ErrorCode.EXPIRED_TOKEN);
+
+            // verify issuer
+            if (!issuer.equals(claimsSet.getIssuer()))
+                throw new AppException(ErrorCode.INVALID_TOKEN);
+
+            if (!expectedType.equals(claimsSet.getStringClaim("token_type")))
+                throw new AppException(ErrorCode.INVALID_TOKEN);
+
+            return claimsSet;
+        } catch (AppException e) {
+            throw new IllegalArgumentException(e);
+        } catch (ParseException | JOSEException e) {
+            throw new AppException(ErrorCode.INVALID_TOKEN);
         }
-
-        return false;
     }
-
 
 }

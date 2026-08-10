@@ -9,7 +9,13 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum ErrorCode {
     INVALID_CREDENTIALS(1001, "Invalid username or password", HttpStatus.UNAUTHORIZED),
-    USER_NOT_FOUND(1002, "User not found", HttpStatus.NOT_FOUND);
+    USER_NOT_FOUND(1002, "User not found", HttpStatus.NOT_FOUND),
+
+    // JWT Exception
+    INVALID_TOKEN(1101, "Invalid Token", HttpStatus.BAD_REQUEST),
+    EXPIRED_TOKEN(1102, "Expired Token", HttpStatus.BAD_REQUEST);
+
+
     int code;
     String message;
     HttpStatus statusCode;

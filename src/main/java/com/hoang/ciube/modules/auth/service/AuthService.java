@@ -14,15 +14,26 @@ import org.springframework.stereotype.Service;
 public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    public AuthResponse authenticate(AuthRequest request){
+    private final JwtService jwtService;
+
+    public AuthResponse authenticate(AuthRequest request) {
         var user = userRepository.findByUsername(request.username())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
-        if(!passwordEncoder.matches(request.password(), user.getPassword())) {
+        if (!passwordEncoder.matches(request.password(), user.getPassword())) {
             throw new AppException(ErrorCode.INVALID_CREDENTIALS);
         }
 
+        String accessToken = jwtService.generateAccessToken(user);
+        String refreshToken = jwtService.generateRefreshToken(user);
 
+        return AuthResponse
+                .builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .tokenType(JwtService.TOKEN_TYPE)
+                .expiresIn(jwtService.getAccessTokenDuration())
+                .build();
     }
 
 }

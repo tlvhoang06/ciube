@@ -8,6 +8,7 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import java.nio.charset.StandardCharsets;
@@ -20,7 +21,9 @@ import java.util.UUID;
 public class JwtService {
     public static final String ACCESS_TYPE = "ACCESS";
     public static final String REFRESH_TYPE = "REFRESH";
+    public static final String TOKEN_TYPE = "Bearer";
 
+    @Getter
     @Value("${jwt.access-token-duration}")
     private long accessTokenDuration;
 
@@ -106,8 +109,6 @@ public class JwtService {
                 throw new AppException(ErrorCode.INVALID_TOKEN);
 
             return claimsSet;
-        } catch (AppException e) {
-            throw new IllegalArgumentException(e);
         } catch (ParseException | JOSEException e) {
             throw new AppException(ErrorCode.INVALID_TOKEN);
         }

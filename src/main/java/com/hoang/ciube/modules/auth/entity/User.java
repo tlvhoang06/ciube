@@ -20,7 +20,7 @@ public class User {
     UUID userId;
 
     @Column(unique = true, nullable = false)
-    String username;
+    String phoneNumber;
 
     @Column(nullable = false)
     String password;

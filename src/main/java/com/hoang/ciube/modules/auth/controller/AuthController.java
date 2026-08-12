@@ -2,6 +2,7 @@ package com.hoang.ciube.modules.auth.controller;
 
 
 import com.hoang.ciube.modules.auth.dto.request.AuthRequest;
+import com.hoang.ciube.modules.auth.dto.request.RegisterRequest;
 import com.hoang.ciube.modules.auth.dto.response.AuthResponse;
 import com.hoang.ciube.modules.auth.service.AuthService;
 import jakarta.validation.Valid;
@@ -20,6 +21,11 @@ public class AuthController {
     @PostMapping("/login")
     public AuthResponse login(@Valid @RequestBody AuthRequest request){
         return authService.authenticate(request);
+    }
+
+    @PostMapping("register")
+    public RegisterRequest register(@Valid @RequestBody RegisterRequest request){
+
     }
 
 

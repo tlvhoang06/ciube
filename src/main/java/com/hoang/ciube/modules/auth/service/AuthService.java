@@ -17,7 +17,7 @@ public class AuthService {
     private final JwtService jwtService;
 
     public AuthResponse authenticate(AuthRequest request) {
-        var user = userRepository.findByUsername(request.username())
+        var user = userRepository.findByPhoneNumber(request.phoneNumber())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
         if (!passwordEncoder.matches(request.password(), user.getPassword())) {

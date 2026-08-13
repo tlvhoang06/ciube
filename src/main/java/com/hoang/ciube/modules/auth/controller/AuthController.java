@@ -4,6 +4,7 @@ package com.hoang.ciube.modules.auth.controller;
 import com.hoang.ciube.modules.auth.dto.request.AuthRequest;
 import com.hoang.ciube.modules.auth.dto.request.RegisterRequest;
 import com.hoang.ciube.modules.auth.dto.response.AuthResponse;
+import com.hoang.ciube.modules.auth.dto.response.RegisterResponse;
 import com.hoang.ciube.modules.auth.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,9 +24,9 @@ public class AuthController {
         return authService.authenticate(request);
     }
 
-    @PostMapping("register")
-    public RegisterRequest register(@Valid @RequestBody RegisterRequest request){
-
+    @PostMapping("/register")
+    public RegisterResponse register(@Valid @RequestBody RegisterRequest request){
+        return authService.register(request);
     }
 
 

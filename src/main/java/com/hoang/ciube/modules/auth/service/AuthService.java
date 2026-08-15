@@ -35,7 +35,7 @@ public class AuthService {
                 .builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
-                .tokenType(JwtService.TOKEN_TYPE)
+                .tokenType("Bearer")
                 .expiresIn(jwtService.getAccessTokenDuration())
                 .build();
     }

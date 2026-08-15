@@ -21,7 +21,6 @@ import java.util.UUID;
 public class JwtService {
     public static final String ACCESS_TYPE = "ACCESS";
     public static final String REFRESH_TYPE = "REFRESH";
-    public static final String TOKEN_TYPE = "Bearer";
 
     @Getter
     @Value("${jwt.access-token-duration}")

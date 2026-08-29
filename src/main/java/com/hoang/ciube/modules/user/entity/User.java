@@ -1,4 +1,4 @@
-package com.hoang.ciube.modules.auth.entity;
+package com.hoang.ciube.modules.user.entity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

@@ -2,7 +2,7 @@ package com.hoang.ciube.modules.auth.service;
 
 import com.hoang.ciube.common.exception.AppException;
 import com.hoang.ciube.common.exception.ErrorCode;
-import com.hoang.ciube.modules.auth.entity.User;
+import com.hoang.ciube.modules.user.entity.User;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;

@@ -37,11 +37,12 @@ public class AuthController {
         return authService.introspect(request);
     }
 
-    @PostMapping("refresh")
+    @PostMapping("/refresh")
     public AuthResponse refresh(@Valid @RequestBody RefreshRequest request){
         return authService.refreshToken(request);
     }
 
+    public
 
 
 }

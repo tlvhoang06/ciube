@@ -1,6 +1,6 @@
-package com.hoang.ciube.modules.auth.repository;
+package com.hoang.ciube.modules.user.repository;
 
-import com.hoang.ciube.modules.auth.entity.User;
+import com.hoang.ciube.modules.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

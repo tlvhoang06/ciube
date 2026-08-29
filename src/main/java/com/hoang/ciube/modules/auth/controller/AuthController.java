@@ -42,7 +42,6 @@ public class AuthController {
         return authService.refreshToken(request);
     }
 
-    public
 
 
 }

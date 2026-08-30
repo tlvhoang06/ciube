@@ -14,7 +14,7 @@ import java.util.Objects;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     private User getCurrentUser() {
         String phoneNumber = Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
@@ -25,6 +25,11 @@ public class UserService {
 
     public UserResponse getMyProfile() {
         User user = getCurrentUser();
-        return UserResponse.builder().userId(user.getUserId()).phoneNumber(user.getPhoneNumber()).build();
+        return UserResponse
+                .builder()
+                .userId(user.getUserId())
+                .phoneNumber(user.getPhoneNumber())
+                .displayName(user.getDisplayName())
+                .build();
     }
 }

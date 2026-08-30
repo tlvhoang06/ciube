@@ -55,6 +55,7 @@ public class AuthService {
         return RegisterResponse
                 .builder()
                 .userId(user.getUserId())
+                .displayName(user.getDisplayName())
                 .phoneNumber(user.getPhoneNumber())
                 .message("Register success")
                 .build();

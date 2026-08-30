@@ -2,20 +2,21 @@ package com.hoang.ciube.modules.auth.service;
 
 import com.hoang.ciube.common.exception.AppException;
 import com.hoang.ciube.common.exception.ErrorCode;
-import com.hoang.ciube.modules.auth.dto.request.AuthRequest;
-import com.hoang.ciube.modules.auth.dto.request.IntrospectRequest;
-import com.hoang.ciube.modules.auth.dto.request.RefreshRequest;
-import com.hoang.ciube.modules.auth.dto.request.RegisterRequest;
+import com.hoang.ciube.modules.auth.dto.request.*;
 import com.hoang.ciube.modules.auth.dto.response.AuthResponse;
+import com.hoang.ciube.modules.auth.dto.response.ChangePasswordResponse;
 import com.hoang.ciube.modules.auth.dto.response.IntrospectResponse;
 import com.hoang.ciube.modules.auth.dto.response.RegisterResponse;
 import com.hoang.ciube.modules.user.entity.User;
 import com.hoang.ciube.modules.user.repository.UserRepository;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -59,6 +60,25 @@ public class AuthService {
                 .phoneNumber(user.getPhoneNumber())
                 .message("Register success")
                 .build();
+    }
+
+    @Transactional
+    public ChangePasswordResponse changePassword(ChangePasswordRequest request) {
+        String currentPhoneNumber = Objects
+                .requireNonNull(SecurityContextHolder.getContext().getAuthentication())
+                .getName();
+        User user = userRepository
+                .findByPhoneNumber(currentPhoneNumber)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        if (!passwordEncoder.matches(request.oldPassword(), user.getPassword())){
+            throw new AppException(ErrorCode.INVALID_CREDENTIALS);
+        }
+
+        user.setPassword(request.newPassword());
+        userRepository.save(user);
+
+        return new ChangePasswordResponse("Password changed successfully");
     }
 
     public IntrospectResponse introspect(IntrospectRequest request) {

@@ -24,4 +24,7 @@ public class User {
 
     @Column(nullable = false)
     String password;
+
+    @Column(nullable = false)
+    String displayName;
 }

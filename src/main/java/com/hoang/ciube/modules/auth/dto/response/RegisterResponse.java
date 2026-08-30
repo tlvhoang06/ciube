@@ -8,5 +8,6 @@ import java.util.UUID;
 public record RegisterResponse(
         UUID userId,
         String phoneNumber,
+        String displayName,
         String message) {
 }

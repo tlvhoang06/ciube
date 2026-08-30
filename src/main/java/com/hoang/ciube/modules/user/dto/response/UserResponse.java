@@ -1,4 +1,4 @@
-package com.hoang.ciube.modules.user.dto;
+package com.hoang.ciube.modules.user.dto.response;
 
 import lombok.Builder;
 

@@ -1,11 +1,11 @@
 package com.hoang.ciube.modules.user.controller;
 
-import com.hoang.ciube.modules.user.dto.UserResponse;
+import com.hoang.ciube.modules.user.dto.request.UpdateProfileRequest;
+import com.hoang.ciube.modules.user.dto.response.UserResponse;
 import com.hoang.ciube.modules.user.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/user")
@@ -16,5 +16,10 @@ public class UserController {
     @GetMapping("/me")
     public UserResponse getMyProfile(){
         return userService.getMyProfile();
+    }
+
+    @PostMapping("/me")
+    public UserResponse updateProfile(@Valid @RequestBody UpdateProfileRequest request){
+        return userService.updateProfile(request);
     }
 }

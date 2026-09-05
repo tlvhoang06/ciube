@@ -52,6 +52,7 @@ public class AuthService {
         User user = new User();
         user.setPhoneNumber(request.phoneNumber());
         user.setPassword(passwordEncoder.encode(request.password()));
+        user.setDisplayName(request.displayName());
         userRepository.save(user);
         return RegisterResponse
                 .builder()

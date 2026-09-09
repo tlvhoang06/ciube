@@ -11,6 +11,7 @@ public enum ErrorCode {
     INVALID_CREDENTIALS(1001, "Invalid username or password", HttpStatus.UNAUTHORIZED),
     USER_NOT_FOUND(1002, "User not found", HttpStatus.NOT_FOUND),
     USERNAME_EXISTED(1003, "Username existed", HttpStatus.BAD_REQUEST),
+    NEW_PASSWORD_SAME_AS_OLD(1004, "New password is similar to old password", HttpStatus.BAD_REQUEST),
     // JWT Exception
     INVALID_TOKEN(1101, "Invalid Token", HttpStatus.BAD_REQUEST),
     EXPIRED_TOKEN(1102, "Expired Token", HttpStatus.BAD_REQUEST);

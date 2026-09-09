@@ -74,11 +74,17 @@ public class AuthService {
                 .findByUsername(currentUsername)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
+        // check entered old password >< user password
         if (!passwordEncoder.matches(request.oldPassword(), user.getPassword())){
             throw new AppException(ErrorCode.INVALID_CREDENTIALS);
         }
 
-        user.setPassword(request.newPassword());
+        // check entered new password == user password
+        if (passwordEncoder.matches(request.newPassword(), user.getPassword())){
+            throw new AppException(ErrorCode.NEW_PASSWORD_SAME_AS_OLD);
+        }
+
+        user.setPassword(passwordEncoder.encode(request.newPassword()));
         userRepository.save(user);
 
         return new ChangePasswordResponse("Password changed successfully");

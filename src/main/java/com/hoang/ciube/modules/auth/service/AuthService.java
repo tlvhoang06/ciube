@@ -11,6 +11,8 @@ import com.hoang.ciube.modules.user.entity.User;
 import com.hoang.ciube.modules.user.repository.UserRepository;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,16 +24,16 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class AuthService {
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final AuthenticationManager authenticationManager;
+    private final PasswordEncoder passwordEncoder;
 
     public AuthResponse authenticate(AuthRequest request) {
-        var user = userRepository.findByPhoneNumber(request.phoneNumber())
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.username(),
+                request.password()));
 
-        if (!passwordEncoder.matches(request.password(), user.getPassword())) {
-            throw new AppException(ErrorCode.INVALID_CREDENTIALS);
-        }
+        User user = userRepository.findByUsername(request.username())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
         String accessToken = jwtService.generateAccessToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
@@ -47,10 +49,10 @@ public class AuthService {
 
     @Transactional
     public RegisterResponse register(RegisterRequest request) {
-        if (userRepository.existsByPhoneNumber(request.phoneNumber()))
-            throw new AppException(ErrorCode.PHONE_NUMBER_EXISTED);
+        if (userRepository.existsByUsername(request.username()))
+            throw new AppException(ErrorCode.USERNAME_EXISTED);
         User user = new User();
-        user.setPhoneNumber(request.phoneNumber());
+        user.setUsername(request.username());
         user.setPassword(passwordEncoder.encode(request.password()));
         user.setDisplayName(request.displayName());
         userRepository.save(user);
@@ -58,18 +60,18 @@ public class AuthService {
                 .builder()
                 .userId(user.getUserId())
                 .displayName(user.getDisplayName())
-                .phoneNumber(user.getPhoneNumber())
+                .username(user.getUsername())
                 .message("Register success")
                 .build();
     }
 
     @Transactional
     public ChangePasswordResponse changePassword(ChangePasswordRequest request) {
-        String currentPhoneNumber = Objects
+        String currentUsername = Objects
                 .requireNonNull(SecurityContextHolder.getContext().getAuthentication())
                 .getName();
         User user = userRepository
-                .findByPhoneNumber(currentPhoneNumber)
+                .findByUsername(currentUsername)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
         if (!passwordEncoder.matches(request.oldPassword(), user.getPassword())){
@@ -95,9 +97,9 @@ public class AuthService {
         // throw AppException if refresh token is invalid/expired
         JWTClaimsSet claimsSet = jwtService.validateToken(request.refreshToken(), JwtService.REFRESH_TYPE);
 
-        String phoneNumber = claimsSet.getSubject(); // phone number
+        String username = claimsSet.getSubject();
         User user = userRepository
-                .findByPhoneNumber(phoneNumber)
+                .findByUsername(username)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
         // generate new tokens

@@ -37,7 +37,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if(StringUtils.hasText(token)){
             try {
                 JWTClaimsSet claimsSet = jwtService.validateToken(token, JwtService.ACCESS_TYPE);
-                String phoneNumber = claimsSet.getSubject();
+                String username = claimsSet.getSubject();
                 String role = claimsSet.getStringClaim("roles");
 
                 // convert role string to authorities list
@@ -47,7 +47,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 // create authentication object
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        phoneNumber,
+                        username,
                         null,
                         authorities);
 

@@ -1,11 +1,9 @@
 package com.hoang.ciube.modules.auth.controller;
 
 
-import com.hoang.ciube.modules.auth.dto.request.AuthRequest;
-import com.hoang.ciube.modules.auth.dto.request.IntrospectRequest;
-import com.hoang.ciube.modules.auth.dto.request.RefreshRequest;
-import com.hoang.ciube.modules.auth.dto.request.RegisterRequest;
+import com.hoang.ciube.modules.auth.dto.request.*;
 import com.hoang.ciube.modules.auth.dto.response.AuthResponse;
+import com.hoang.ciube.modules.auth.dto.response.ChangePasswordResponse;
 import com.hoang.ciube.modules.auth.dto.response.IntrospectResponse;
 import com.hoang.ciube.modules.auth.dto.response.RegisterResponse;
 import com.hoang.ciube.modules.auth.service.AuthService;
@@ -30,6 +28,11 @@ public class AuthController {
     @PostMapping("/register")
     public RegisterResponse register(@Valid @RequestBody RegisterRequest request){
         return authService.register(request);
+    }
+
+    @PostMapping("/change-password")
+    public ChangePasswordResponse changePassword(@Valid @RequestBody ChangePasswordRequest request){
+        return authService.changePassword(request);
     }
 
     @PostMapping("/introspect")

@@ -7,7 +7,7 @@ import java.util.UUID;
 @Builder
 public record UserResponse(
         UUID userId,
-        String phoneNumber,
+        String username,
         String displayName
 ) {
 }

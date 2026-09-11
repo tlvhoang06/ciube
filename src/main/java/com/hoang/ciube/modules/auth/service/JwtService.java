@@ -57,7 +57,7 @@ public class JwtService {
         Date issueAt = Date.from(now);
         Date expiryTime = Date.from(now.plusSeconds(validDuration));
         JWTClaimsSet.Builder claims = new JWTClaimsSet.Builder()
-                .subject(user.getPhoneNumber())
+                .subject(user.getUsername())
                 .issuer(issuer)
                 .issueTime(issueAt)
                 .expirationTime(expiryTime)

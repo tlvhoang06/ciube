@@ -19,3 +19,7 @@ jwt:
   access-token-duration: 3600
   refresh-token-duration: 604800
   issuer: ciube.com
+
+logging:
+  level:
+    org.springframework.security: DEBUG

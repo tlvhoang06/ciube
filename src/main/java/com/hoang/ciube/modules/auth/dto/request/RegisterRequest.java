@@ -7,7 +7,7 @@ public record RegisterRequest(
         String displayName,
 
         @NotBlank
-        String phoneNumber,
+        String username,
 
         @NotBlank
         String password

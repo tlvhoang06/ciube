@@ -19,9 +19,9 @@ public class UserService {
     private final UserRepository userRepository;
 
     private User getCurrentUser() {
-        String phoneNumber = Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
+        String username = Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
         return userRepository
-                .findByPhoneNumber(phoneNumber)
+                .findByUsername(username)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
     }
 
@@ -30,7 +30,7 @@ public class UserService {
         return UserResponse
                 .builder()
                 .userId(user.getUserId())
-                .phoneNumber(user.getPhoneNumber())
+                .username(user.getUsername())
                 .displayName(user.getDisplayName())
                 .build();
     }
@@ -43,7 +43,7 @@ public class UserService {
         return UserResponse
                 .builder()
                 .userId(user.getUserId())
-                .phoneNumber(user.getPhoneNumber())
+                .username(user.getUsername())
                 .displayName(user.getDisplayName())
                 .build();
     }
